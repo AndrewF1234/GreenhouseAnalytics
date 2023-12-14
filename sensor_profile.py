@@ -24,7 +24,7 @@ try:
     def log_error(error, type):
         with open(DATA_LOGGED_FILEPATH + ERROR_LOG_FILE, type) as f:
             writer = csv.writer(f)
-            writer.writerow(str(e))
+            writer.writerow([read_time(), str(error)])
             f.close()
     def log_error(error):
         with open(DATA_LOGGED_FILEPATH + ERROR_LOG_FILE, "a") as f:
@@ -84,6 +84,7 @@ try:
     def read_time():
         return datetime.datetime.today()
 
+    last_reading = 0
     while True:
         if (last_reading + 5 < time.time()):
             last_reading = time.time()
@@ -105,7 +106,7 @@ try:
                     light = 0.0
             except Exception as e:
                 light = None
-                log_file(e)
+                log_error(e)
                 pass
 
             with open(DATA_LOGGED_FILEPATH + DATA_LOGGED, 'a') as f:
@@ -144,12 +145,11 @@ try:
                 login_points=list(results.get_points())
                 cached_data_list.clear() # Clears when done
             except socket.error as e:
-                error = [read_time(), str(e)] # Stores error
-                log_file(error)
+                log_error(e)
                 pass
 except Exception as e:
-     with open("/home/raspberry/IotEnvironmentProject/readingValues/"+ "logfile", "a") as f:
+    with open("/home/raspberry/IotEnvironmentProject/readingValues/"+ "logfile", "a") as f:
         writer = csv.writer(f)
-        writer.writerow(str(e))
+        writer.writerow([read_time(), str(e)])
         f.close()
     pass
