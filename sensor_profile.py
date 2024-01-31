@@ -7,14 +7,13 @@ from datetime import date, timedelta
 from influxdb import InfluxDBClient
 
 # Init and Declare changing variables
-try:
-        
-    DATA_LOGGED = '7-26-2023.csv'
-    DEPENDENT_PI_IP = "172.27.8.101"
-    DATA_LOGGED_FILEPATH = '/home/raspberry/IotEnvironmentProject/readingValues/'
-    ERROR_LOG_FILE = "logfile"
-    DATABASE_NAME = "home"
+DATA_LOGGED = '7-26-2023.csv'
+DEPENDENT_PI_IP = "172.27.8.101"
+DATA_LOGGED_FILEPATH = '/home/raspberry/IotEnvironmentProject/readingValues/'
+ERROR_LOG_FILE = "logfile"
+DATABASE_NAME = "home"
 
+try:
     cached_data_list = []
     tmpAddress = 0x50 # 12c connection
     beta =  2180 # represents maximum digital value should be 4096 for thermistor equation
