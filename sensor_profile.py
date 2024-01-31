@@ -1,5 +1,5 @@
 # Board Specific Imports
-import smbus, board, busio, adafruit_tsl2561, adafruit_ahtx0
+import smbus, board, busio, adafruit_tsl2561, adafruit_ahtx0, logging
 
 # Logic Specific Imports
 import math, time, datetime, csv, pytz, os, socket
@@ -13,23 +13,15 @@ DATA_LOGGED_FILEPATH = '/home/raspberry/IotEnvironmentProject/readingValues/'
 ERROR_LOG_FILE = "logfile"
 DATABASE_NAME = "home"
 
+# Set up python logging
+# Only log events on the INFO level and above (Debug => Info => Warning => Error => Critical)
+logging.basicConfig(level=logging.INFO, filename=f"{DATA_LOGGED_FILEPATH}logfile.log",filemode="a")
+
 try:
     cached_data_list = []
     tmpAddress = 0x50 # 12c connection
     beta =  2180 # represents maximum digital value should be 4096 for thermistor equation
     header = ['date', 'Temperature', 'Temperature 2', 'Humidity', 'Light Intensity(Lux)']
-
-    # Function for logging errors
-    def log_error(error, type):
-        with open(DATA_LOGGED_FILEPATH + ERROR_LOG_FILE, type) as f:
-            writer = csv.writer(f)
-            writer.writerow([read_time(), str(error)])
-            f.close()
-    def log_error(error):
-        with open(DATA_LOGGED_FILEPATH + ERROR_LOG_FILE, "a") as f:
-            writer = csv.writer(f)
-            writer.writerow(str(error))
-            f.close()
 
     # Checking if the log file exists. If not makes it then adds a header
     if (not os.path.exists(DATA_LOGGED_FILEPATH + DATA_LOGGED)):
@@ -47,7 +39,7 @@ try:
         humidity_sensor = adafruit_ahtx0.AHTx0(board. I2C())
         humidity_sensor.calibrate()
     except Exception as e:
-        log_error(e)
+        logging.error(e)
         pass
         
     # Init the  influx client and database
@@ -55,7 +47,7 @@ try:
         client=InfluxDBClient(host=DEPENDENT_PI_IP,port="8086")
         client.switch_database(DATABASE_NAME)
     except Exception as e:
-        log_error(e)
+        logging.error(e)
         pass
         
     def read_temp():
@@ -105,7 +97,7 @@ try:
                     light = 0.0
             except Exception as e:
                 light = None
-                log_error(e)
+                logging.error(e)
                 pass
 
             with open(DATA_LOGGED_FILEPATH + DATA_LOGGED, 'a') as f:
@@ -144,7 +136,7 @@ try:
                 login_points=list(results.get_points())
                 cached_data_list.clear() # Clears when done
             except socket.error as e:
-                log_error(e)
+                logging.error(e)
                 pass
 except Exception as e:
     with open("/home/raspberry/IotEnvironmentProject/readingValues/"+ "logfile", "a") as f:
