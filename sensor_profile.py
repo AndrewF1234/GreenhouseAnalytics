@@ -15,7 +15,10 @@ DATABASE_NAME = "home"
 
 # Set up python logging
 # Only log events on the INFO level and above (Debug => Info => Warning => Error => Critical)
-logging.basicConfig(level=logging.INFO, filename=f"{DATA_LOGGED_FILEPATH}logfile.log",filemode="a")
+logging.basicConfig(level=logging.INFO, filename=f"{DATA_LOGGED_FILEPATH}logfile.log",filemode="a", format="%(asctime)s %(levelname)s %(message)s")
+
+#trigger a test error
+logging.error("This is another test error!")
 
 try:
     cached_data_list = []
